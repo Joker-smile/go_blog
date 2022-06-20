@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"log"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 var db *gorm.DB
@@ -40,7 +42,7 @@ func init() {
 		dbName))
 
 	if err != nil {
-		log.Println(err)
+		log.Println("sql error:", err)
 	}
 
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
