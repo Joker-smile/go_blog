@@ -60,13 +60,13 @@ func CloseDB() {
 	defer db.Close()
 }
 
-func (tag *Tag) BeforeCreate(scope *gorm.Scope) error {
+func (model *Model) BeforeCreate(scope *gorm.Scope) error {
 	scope.SetColumn("CreatedOn", time.Now().Unix())
 
 	return nil
 }
 
-func (tag *Tag) BeforeUpdate(scope *gorm.Scope) error {
+func (model *Model) BeforeUpdate(scope *gorm.Scope) error {
 	scope.SetColumn("ModifiedOn", time.Now().Unix())
 
 	return nil
