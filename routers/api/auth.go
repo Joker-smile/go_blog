@@ -4,10 +4,10 @@ import (
 	"blog/models"
 	"blog/pkg/e"
 	"blog/pkg/util"
+	"blog/pkg/util/logging"
 	"fmt"
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 )
 
@@ -43,7 +43,7 @@ func GetAuth(c *gin.Context) {
 		}
 	} else {
 		for _, err := range valid.Errors {
-			log.Println(err.Key, err.Message)
+			logging.Info(err.Key, err.Message)
 		}
 	}
 
