@@ -5,7 +5,6 @@ import (
 	"blog/pkg/e"
 	"blog/pkg/util"
 	"blog/pkg/util/logging"
-	"fmt"
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -19,7 +18,6 @@ type auth struct {
 func GetAuth(c *gin.Context) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
-	fmt.Println("modifiedBy")
 	valid := validation.Validation{}
 	a := auth{Username: username, Password: password}
 	ok, _ := valid.Valid(&a)
