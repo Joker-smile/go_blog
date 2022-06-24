@@ -105,10 +105,10 @@ func AddArticle(c *gin.Context) {
 	state := com.StrTo(c.DefaultQuery("state", "0")).MustInt()
 	fmt.Println(tagId)
 	valid := validation.Validation{}
+	valid.Required(createdBy, "created_by").Message("创建人不能为空")
 	valid.Required(title, "title").Message("标题不能为空")
 	valid.Required(desc, "desc").Message("简述不能为空")
 	valid.Required(content, "content").Message("内容不能为空")
-	valid.Required(createdBy, "created_by").Message("创建人不能为空")
 	valid.Range(state, 0, 1, "state").Message("状态只允许0或1")
 	valid.MaxSize(title, 100, "title").Message("标题最长为100字符")
 	valid.MaxSize(desc, 255, "desc").Message("简述最长为255字符")
