@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-var jwtSecret = []byte(setting.JwtSecret)
+var jwtSecret = []byte(setting.AppSetting.JwtSecret)
 
 type Claims struct {
 	Username string `json:"username"`
@@ -16,7 +16,7 @@ type Claims struct {
 
 func GenerateToken(username string, userId int) (string, error) {
 	nowTime := time.Now()
-	expireHours := setting.JwtExpireTime
+	expireHours := setting.AppSetting.JwtExpireTime
 	expireTime := nowTime.Add(time.Duration(expireHours) * time.Hour)
 
 	claims := Claims{
