@@ -97,15 +97,17 @@ func GetArticles(c *gin.Context) {
 
 //新增文章
 func AddArticle(c *gin.Context) {
-	tagId := com.StrTo(c.Query("tag_id")).MustInt()
-	title := c.Query("title")
-	desc := c.Query("desc")
-	content := c.Query("content")
-	createdBy := c.Query("created_by")
-	state := com.StrTo(c.DefaultQuery("state", "0")).MustInt()
+	tagId := com.StrTo(c.PostForm("tag_id")).MustInt()
+	title := c.PostForm("title")
+	desc := c.PostForm("desc")
+	content := c.PostForm("content")
+	createdBy := c.PostForm("created_by")
+	coverImageUrl := c.PostForm("cover_image_url")
+	state := com.StrTo(c.DefaultPostForm("state", "0")).MustInt()
 	fmt.Println(tagId)
 	valid := validation.Validation{}
 	valid.Required(createdBy, "created_by").Message("创建人不能为空")
+	valid.Required(coverImageUrl, "cover_image_url").Message("文章图片不能为空")
 	valid.Required(title, "title").Message("标题不能为空")
 	valid.Required(desc, "desc").Message("简述不能为空")
 	valid.Required(content, "content").Message("内容不能为空")
@@ -123,7 +125,7 @@ func AddArticle(c *gin.Context) {
 			data["content"] = content
 			data["created_by"] = createdBy
 			data["state"] = state
-
+			data["cover_image_url"] = coverImageUrl
 			models.AddArticle(data)
 			code = e.SUCCESS
 		} else {
@@ -153,14 +155,14 @@ func EditArticle(c *gin.Context) {
 	valid := validation.Validation{}
 
 	id := com.StrTo(c.Param("id")).MustInt()
-	tagId := com.StrTo(c.Query("tag_id")).MustInt()
-	title := c.Query("title")
-	desc := c.Query("desc")
-	content := c.Query("content")
-	modifiedBy := c.Query("modified_by")
-
+	tagId := com.StrTo(c.PostForm("tag_id")).MustInt()
+	title := c.PostForm("title")
+	desc := c.PostForm("desc")
+	content := c.PostForm("content")
+	modifiedBy := c.PostForm("modified_by")
+	coverImageUrl := c.PostForm("cover_image_url")
 	var state int = -1
-	if arg := c.Query("state"); arg != "" {
+	if arg := c.PostForm("state"); arg != "" {
 		state = com.StrTo(arg).MustInt()
 		valid.Range(state, 0, 1, "state").Message("状态只允许0或1")
 	}
@@ -173,28 +175,31 @@ func EditArticle(c *gin.Context) {
 	code := e.INVALID_PARAMS
 	if !valid.HasErrors() {
 		if models.ExistArticleByID(id) {
-			if models.ExistTagByID(tagId) {
-				data := make(map[string]interface{})
-				if tagId > 0 {
+			data := make(map[string]interface{})
+			if tagId > 0 {
+				if models.ExistTagByID(tagId) {
 					data["tag_id"] = tagId
+				} else {
+					code = e.ERROR_NOT_EXIST_TAG
 				}
-				if title != "" {
-					data["title"] = title
-				}
-				if desc != "" {
-					data["desc"] = desc
-				}
-				if content != "" {
-					data["content"] = content
-				}
-
-				data["modified_by"] = modifiedBy
-
-				models.EditArticle(id, data)
-				code = e.SUCCESS
-			} else {
-				code = e.ERROR_NOT_EXIST_TAG
 			}
+			if title != "" {
+				data["title"] = title
+			}
+			if desc != "" {
+				data["desc"] = desc
+			}
+			if content != "" {
+				data["content"] = content
+			}
+			if coverImageUrl != "" {
+				data["cover_image_url"] = coverImageUrl
+			}
+
+			data["modified_by"] = modifiedBy
+
+			models.EditArticle(id, data)
+			code = e.SUCCESS
 		} else {
 			code = e.ERROR_NOT_EXIST_ARTICLE
 		}
